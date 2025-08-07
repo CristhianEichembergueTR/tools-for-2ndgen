@@ -101,7 +101,20 @@ Revisor: [nome do usuário que será atribuído]
   4. **NÃO ASSUMIR** que todos os arquivos modificados devem ser incluídos
 - Após o usuário especificar os arquivos, adicione-os com `git add` e mostre o `git status` para confirmação.
 - Verifique se algum arquivo adicionado se encontra na pasta `bd/scripts`, caso encontre, siga as regras da sessão "Code review para arquivos SQL na pasta bd/scripts".
-- Quando você verificar no comando "Revisor" significa que você precisa colocar o revisor no campo assignees do PR, caso não tenha nenhum revisor, apenas atribua o LuizVeraTR automaticamente como padrão (mas caso o usuário logado aqui no GitHubCopilot for o próprio LuizVeraTR solicitando o PR, o revisor deve ser CristhianEichembergueTR). Utilize o GitHub MCP para criar e atribuir o PR.
+- **REGRA DE ATRIBUIÇÃO INTELIGENTE COM ANTI-AUTO-ATRIBUIÇÃO**: 
+  1. **SEMPRE** verificar quem está logado usando `mcp_github_get_me` ANTES de qualquer atribuição
+  2. **NUNCA** atribuir o próprio usuário logado como assignee do PR
+  3. **Lógica de revisor baseada no usuário logado**:
+     - Se usuário logado = LuizVeraTR → assignee = CristhianEichembergueTR
+     - Se usuário logado = CristhianEichembergueTR → assignee = LuizVeraTR
+     - Se usuário logado = qualquer outro → assignee = LuizVeraTR
+  4. **Se revisor foi especificado manualmente**: verificar se não é o próprio usuário logado
+     - Se revisor especificado = usuário logado → **IGNORAR** e aplicar a lógica inteligente acima
+     - Se revisor especificado ≠ usuário logado → usar o revisor especificado
+  5. **EXEMPLO PRÁTICO**:
+     - Usuário logado: LuizVeraTR, Revisor especificado: "LuizVeraTR" → Sistema usa CristhianEichembergueTR
+     - Usuário logado: LuizVeraTR, Revisor especificado: "João" → Sistema usa João
+     - Usuário logado: LuizVeraTR, Sem revisor especificado → Sistema usa CristhianEichembergueTR
 - **REGRA OBRIGATÓRIA: SEMPRE CRIAR NOVA BRANCH**: Nunca fazer checkout para uma branch existente do ticket. Sempre criar uma nova branch seguindo a nomenclatura `AB#NumeroDoTicket-FIX[incremental]`, onde `NumeroDoTicket` é o número do ticket. 
 - **Verificação de Branch Existente**: Verificar se a branch `AB#NumeroDoTicket` já existe. Se existir, automaticamente usar o sufixo `-FIX1`. Se `AB#NumeroDoTicket-FIX1` também existir, usar `-FIX2`, e assim por diante.
 - **Processo obrigatório**:
@@ -125,12 +138,17 @@ Padrão do commit: `AB#NumeroDoTicket - [TÍTULO_RECUPERADO_DO_ADO]`, onde `Nume
 - Quando o usuário especificar "Revisor: [nome]", usar o Github MCP para atribuir oficialmente após a criação do PR nos assignees
 
 - **MÉTODO PARA ATRIBUIR ASSIGNEES** - Use sempre este comando após criar o PR: `mcp_github_update_issue` para atribuir o assignee
-- **🚨 PASSOS OBRIGATÓRIOS - NUNCA ESQUECER 🚨**:
-  1. ✅ Primeiro criar o PR com `mcp_github_create_pull_request`
-  2. ✅ **IMEDIATAMENTE** após criar, usar `mcp_github_update_issue` para atribuir assignees
-  3. ✅ Substituir OWNER, REPO e ISSUE_NUMBER pelos valores corretos
-  4. ✅ Incluir no array de assignees apenas os usuários solicitados
-  5. ✅ Se não houver revisor e assignees especificados, usar "LuizVeraTR" como padrão (mas caso o usuário logado aqui no GitHubCopilot for o próprio LuizVeraTR solicitando o PR, o revisor deve ser CristhianEichembergueTR). Utilize o GitHub MCP para criar e atribuir o PR.
+- **🚨 PASSOS OBRIGATÓRIOS COM ANTI-AUTO-ATRIBUIÇÃO - NUNCA ESQUECER 🚨**:
+  1. ✅ **PRIMEIRO**: Verificar usuário logado com `mcp_github_get_me`
+  2. ✅ Criar PR com `mcp_github_create_pull_request`
+  3. ✅ **IMEDIATAMENTE** após criar, usar `mcp_github_update_issue` para atribuir assignees
+  4. ✅ Substituir OWNER, REPO e ISSUE_NUMBER pelos valores corretos
+  5. ✅ **APLICAR REGRA ANTI-AUTO-ATRIBUIÇÃO**: 
+     - Se não houver revisor especificado: usar lógica inteligente baseada no usuário logado
+     - Se revisor especificado = usuário logado: **IGNORAR** e usar lógica inteligente
+     - Se revisor especificado ≠ usuário logado: usar o revisor especificado
+     - **LÓGICA INTELIGENTE** = a regra automática baseada em quem está logado (item 3 acima)
+  6. ✅ **NUNCA** incluir o usuário logado no array de assignees
 
 - NÃO mencionar assignees em comentários, apenas atribuir no campo correto do GitHub.
 - SEMPRE atribuir nos assignees, não nos reviewers.
@@ -306,9 +324,22 @@ updates: [ {"op": "replace", "path": "/fields/System.State", "value": "Closed"},
 
 ## VARIAVEIS
 `Caminho_Padrao=C:\FONTES_GIT`
-`usuario: CristhianEichembergueTR`
+`usuario: [BUSCAR_AUTOMATICAMENTE_GITHUB_USER]` - Use `mcp_github_get_me` para recuperar o usuário logado
 `Branch_Atualizar=main`
 `Projeto do Azure Devops= onesource-global-trade-next` 
+
+### Verificação de Caminho
+**SEMPRE** que utilizar o `Caminho_Padrao`, verificar se o caminho existe:
+1. **Se o caminho existir**: prosseguir normalmente
+2. **Se o caminho NÃO existir**: exibir a mensagem exata: "O DEVFLOW não encontrou o caminho fornecido, digite o caminho onde ficam seus repositórios para que eu possa continuar."
+3. **Aguardar** o usuário fornecer o novo caminho
+4. **Continuar** com o processo usando o caminho fornecido pelo usuário
+
+### Recuperação Automática de Usuário
+**SEMPRE** que precisar do nome do usuário (para atribuições, commits, etc.), use automaticamente:
+1. Chame `mcp_github_get_me` para obter dados do usuário logado
+2. Use o campo `login` como nome de usuário GitHub
+3. Para ADO, use o padrão: `{login}@thomsonreuters.com` ou busque o email real se disponível
 
 =========================================================================================================
 
