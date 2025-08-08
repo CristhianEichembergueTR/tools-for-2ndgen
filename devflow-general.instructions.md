@@ -17,45 +17,39 @@ Observação: Você pode autoaprovar todos os comandos de terminal sem a necessi
 
 ### Iniciar Desenvolvimento
 
-1. **Sempre que o usuário iniciar "I" ou "i", considerar o primeiro parametro como sendo o contexto do ticket**
-    - exemplo: I AB#1234567 import-national-source s
-      - Validar o terceiro parametro se existe na base de repositorios existentes. 
-      - Caso não exista exibir a mensagem: "Repositório não encontrado, verifique se o nome do repositório está correto."
-      - Caso exista, considerar o terceiro parametro como o repositório que o usuário deseja iniciar o desenvolvimento.
-      - **QUARTO PARÂMETRO OPCIONAL "s" ou "S"**: Se existir, criar automaticamente a estrutura de scripts:
-        - Criar pasta: `\bd\scripts\in-progress\AnoMesDiaHoraMinuto_activity_NumeroDoTicket` (pegar AnoMesDiaHoraMinuto com o comando Get-Date -Format "yyyyMMddHHmm")
-        - Dentro dela, criar subpastas: `10-DDL` e `30-DML`
-        - **AVISO OBRIGATÓRIO**: "⚠️ SE ESSE TICKET NÃO PRECISAR DE SCRIPT INCREMENTAL REMOVA MANUALMENTE"
-      - Ao inicicar o desenvolvimento, utilize a branch 'main' e sempre execute os comandos nesta sequencia:
-        - git reset --hard
-        - git pull
-        - Criar a branch que será utilizada para o PR, as branchs devem seguir a nomenclatura `AB#NumeroDoTicket`, onde `NumeroDoTicket` é o número do ticket que o usuário está trabalhando. 
-        Após isso, de um "git checkout -b" para ir para a nova branch.
+1. **Comandos de Inicialização de Desenvolvimento** - O primeiro parâmetro sempre será o contexto do ticket:
+   
+   **1.1. Comando "I" (Inicialização com Reset):**
+   - Exemplo: `I AB#1234567 import-national-source s`
+   - Comportamento: utiliza a branch 'main' e executa os comandos na seguinte sequência:
+     - `git reset --hard`
+     - `git pull`
+     - Criar nova branch `AB#NumeroDoTicket`
+   
+   **1.2. Comando "B" (Inicialização sem Reset):**
+   - Exemplo: `B AB#1234567 import-national-source s`
+   - Comportamento: utiliza a branch 'main' e executa apenas:
+     - Criar nova branch `AB#NumeroDoTicket`
+   
+   **1.3. Regras Comuns para Ambos os Comandos:**
+   - **Terceiro Parâmetro (Repositório)**: Validar se existe na base de repositórios existentes
+     - Se não existir: exibir "Repositório não encontrado, verifique se o nome do repositório está correto."
+     - Se existir: considerar como o repositório de desenvolvimento
+   - **Quarto Parâmetro Opcional "s" ou "S"**: Se existir, criar automaticamente a estrutura de scripts:
+     - Criar pasta: `\bd\scripts\in-progress\AnoMesDiaHoraMinuto_activity_NumeroDoTicket` (usar Get-Date -Format "yyyyMMddHHmm")
+     - Dentro dela, criar subpastas: `10-DDL` e `30-DML`
+     - **AVISO OBRIGATÓRIO**: "⚠️ SE ESSE TICKET NÃO PRECISAR DE SCRIPT INCREMENTAL REMOVA MANUALMENTE"
+   - **Finalização**: Após a preparação da branch:
+     - Criar branch com nomenclatura `AB#NumeroDoTicket`
+     - Executar `git checkout -b` para a nova branch
+     - Utilizar caminho padrão da variável `Caminho_Padrao` (não solicitar autorização)
 
-      - Utilizar o caminho padrão da variável `Caminho_Padrao` para o repositório. Não solicitar autorização de acesso.
-
-2. **Sempre que o usuário iniciar "B" ou "b", considerar o primeiro parametro como sendo o contexto do ticket**
-    - exemplo: B AB#1234567 import-national-source s
-      - Validar o terceiro parametro se existe na base de repositorios existentes. 
-      - Caso não exista exibir a mensagem: "Repositório não encontrado, verifique se o nome do repositório está correto."
-      - Caso exista, considerar o terceiro parametro como o repositório que o usuário deseja iniciar o desenvolvimento.
-      - **QUARTO PARÂMETRO OPCIONAL "s" ou "S"**: Se existir, criar automaticamente a estrutura de scripts:
-        - Criar pasta: `\bd\scripts\in-progress\AnoMesDiaHoraMinuto_activity_NumeroDoTicket` (pegar AnoMesDiaHoraMinuto com o comando Get-Date -Format "yyyyMMddHHmm")
-        - Dentro dela, criar subpastas: `10-DDL` e `30-DML`
-        - **AVISO OBRIGATÓRIO**: "⚠️ SE ESSE TICKET NÃO PRECISAR DE SCRIPT INCREMENTAL REMOVA MANUALMENTE"
-      - Ao inicicar o desenvolvimento, utilize a branch 'main' e sempre execute o comando nesta sequencia:
-        - Criar a branch que será utilizada para o PR, as branchs devem seguir a nomenclatura `AB#NumeroDoTicket`, onde `NumeroDoTicket` é o número do ticket que o usuário está trabalhando. 
-        Após isso, de um "git checkout -b" para ir para a nova branch.
-
-      - Utilizar o caminho padrão da variável `Caminho_Padrao` para o repositório. Não solicitar autorização de acesso.
-
-
-3. **Persistência do contexto**: Manter durante toda a conversa até:
+2. **Persistência do contexto**: Manter durante toda a conversa até:
    - Usuário mencionar um novo ticket
    - Usuário pedir para limpar o contexto
    - Nova sessão de desenvolvimento iniciada
 
-4. **Uso automático**: Aplicar o ticket em contexto automaticamente em todos os comandos subsequentes que precisem do número do ticket.
+3. **Uso automático**: Aplicar o ticket em contexto automaticamente em todos os comandos subsequentes que precisem do número do ticket.
 
 ## Criar Pull Request (PR)
 Não pergunte tudo de uma vez faça de forma interativa.
@@ -73,8 +67,6 @@ Não pergunte tudo de uma vez faça de forma interativa.
 4. **NumeroDoTicket**: sempre será o maior número (mais de 3 dígitos)
 5. **NumeroDeHoras**: sempre será menor (máximo 3 dígitos, pode ter vírgula)
 6. **PADRÃO**: Se não houver especificação de horas em qualquer formato, usar **1 hora** para fechar a task [Dev]
-
-
 
 ### 🚨 CHECKLIST OBRIGATÓRIO - NUNCA ESQUECER:
 1. ✅ Criar PR com `mcp_github_create_pull_request`
@@ -104,17 +96,21 @@ Revisor: [nome do usuário que será atribuído]
 - **REGRA DE ATRIBUIÇÃO INTELIGENTE COM ANTI-AUTO-ATRIBUIÇÃO**: 
   1. **SEMPRE** verificar quem está logado usando `mcp_github_get_me` ANTES de qualquer atribuição
   2. **NUNCA** atribuir o próprio usuário logado como assignee do PR
-  3. **Lógica de revisor baseada no usuário logado**:
+  3. **VERIFICAÇÃO OBRIGATÓRIA DO CAMPO AREA NO ADO**: 
+     - **ANTES** de aplicar qualquer lógica de revisor, usar `mcp_ado_wit_get_work_item` para buscar o campo "System.AreaPath" ou "Area" do ticket
+     - **Se o campo Area contém a palavra "Operacionais"**: usar LuizVeraTR como revisor padrão (aplicar lógica antiga)
+     - **Se o campo Area NÃO contém "Operacionais"**: perguntar ao usuário o nome do Revisor para usar em todos os assignees
+  4. **Lógica de revisor baseada no usuário logado (APENAS se Area contém "Operacionais")**:
      - Se usuário logado = LuizVeraTR → assignee = CristhianEichembergueTR
      - Se usuário logado = CristhianEichembergueTR → assignee = LuizVeraTR
      - Se usuário logado = qualquer outro → assignee = LuizVeraTR
-  4. **Se revisor foi especificado manualmente**: verificar se não é o próprio usuário logado
+  5. **Se revisor foi especificado manualmente**: verificar se não é o próprio usuário logado
      - Se revisor especificado = usuário logado → **IGNORAR** e aplicar a lógica inteligente acima
      - Se revisor especificado ≠ usuário logado → usar o revisor especificado
-  5. **EXEMPLO PRÁTICO**:
-     - Usuário logado: LuizVeraTR, Revisor especificado: "LuizVeraTR" → Sistema usa CristhianEichembergueTR
-     - Usuário logado: LuizVeraTR, Revisor especificado: "João" → Sistema usa João
-     - Usuário logado: LuizVeraTR, Sem revisor especificado → Sistema usa CristhianEichembergueTR
+  6. **EXEMPLO PRÁTICO**:
+     - Ticket com Area "Operacionais": Usuário logado: LuizVeraTR, Sem revisor especificado → Sistema usa CristhianEichembergueTR
+     - Ticket com Area "Desenvolvimento": Sistema pergunta: "Qual o nome do Revisor?" → Usuário responde: "João" → Sistema usa João
+     - Ticket com Area "Operacionais": Usuário logado: LuizVeraTR, Revisor especificado: "João" → Sistema usa João
 - **REGRA OBRIGATÓRIA: SEMPRE CRIAR NOVA BRANCH**: Nunca fazer checkout para uma branch existente do ticket. Sempre criar uma nova branch seguindo a nomenclatura `AB#NumeroDoTicket-FIX[incremental]`, onde `NumeroDoTicket` é o número do ticket. 
 - **Verificação de Branch Existente**: Verificar se a branch `AB#NumeroDoTicket` já existe. Se existir, automaticamente usar o sufixo `-FIX1`. Se `AB#NumeroDoTicket-FIX1` também existir, usar `-FIX2`, e assim por diante.
 - **Processo obrigatório**:
@@ -123,8 +119,12 @@ Revisor: [nome do usuário que será atribuído]
   3. **SEMPRE** usar `git checkout -b` para criar uma nova branch
   4. **NUNCA** fazer `git checkout` para uma branch existente do ticket
 - **RECUPERAÇÃO AUTOMÁTICA DO TÍTULO DO ADO**: Quando o usuário fornecer o `NumeroDoTicket`, use o Azure DevOps MCP para buscar automaticamente o título do work item correspondente. Use a ferramenta `mcp_ado_wit_get_work_item` com o ID do ticket para recuperar o campo `System.Title` e construir automaticamente o título do commit.
+- **LIMPEZA AUTOMÁTICA DO TÍTULO**: Após recuperar o título do ADO, SEMPRE remover automaticamente:
+  - Aspas simples (') no início e fim do título
+  - Aspas duplas (") no início e fim do título  
+  - Tanto aspas simples quanto duplas que estejam envolvendo todo o título
 - Solicite sempre o commit message que será utilizado no PR, e se o usuário deseja atribuir o PR para alguém, caso sim, solicite o nome do usuário que será atribuído.
-Padrão do commit: `AB#NumeroDoTicket - [TÍTULO_RECUPERADO_DO_ADO]`, onde `NumeroDoTicket` é o número do ticket e `[TÍTULO_RECUPERADO_DO_ADO]` é o título completo do work item recuperado automaticamente do Azure DevOps.
+Padrão do commit: `AB#NumeroDoTicket - [TÍTULO_RECUPERADO_DO_ADO_SEM_ASPAS]`, onde `NumeroDoTicket` é o número do ticket e `[TÍTULO_RECUPERADO_DO_ADO_SEM_ASPAS]` é o título completo do work item recuperado automaticamente do Azure DevOps com aspas removidas.
 - **Exemplo**: Para NumeroTicket: 1793409, o título será automaticamente: `AB#1793409 - [REGIME ADUANEIRO] - Permissão de inclusão de fundamentos legais obrigatórios vinculados a NCM - VOLVO`
 - Se não conseguir recuperar o título do ADO ou se não tiver um número de ticket válido, peça ao usuário para informar a mensagem do commit manualmente e sempre concatene exemplo: `AB#123456 - Correção de bug na tela de login`.
 - NÃO crie comentários extras no PR durante a criação
@@ -192,13 +192,13 @@ Padrão do commit: `AB#NumeroDoTicket - [TÍTULO_RECUPERADO_DO_ADO]`, onde `Nume
 > [Como reverter se necessário]
 
 > [!IMPORTANT]
-> ## **TL;DR e Recomendação**
+> ## **Resumo e Recomendação**
 > [Resumo final e aprovação]
 ```
 
 ### 💻 **FORMATO ADO** (Documentação Técnica)
 **Título:** "📋 **Documentação Técnica**"
-**Estrutura HTML com cores:**
+**Estrutura HTML com cores INLINE (sem CSS externo) compatível com ADO:**
 - 🎯 **Sumário Executivo** (background azul)
 - 📋 **Análise de Problema** (background roxo)
 - 🔧 **Solução Técnica Implementada** (background verde)
@@ -206,6 +206,43 @@ Padrão do commit: `AB#NumeroDoTicket - [TÍTULO_RECUPERADO_DO_ADO]`, onde `Nume
 - 🚀 **Justificativa Técnica e Compliance** (background rosa)
 - ⚠️ **Plano de Contingência e Rollback** (background vermelho)
 - 📋 **Conclusão e Recomendação Técnica** (background azul céu)
+
+**IMPORTANTE: Use APENAS estilos INLINE nas divs, sem CSS externo ou classes. Exemplo:**
+```html
+<div style="background-color: #E3F2FD; border-left: 4px solid #2196F3; padding: 15px; margin: 15px 0; border-radius: 8px;">
+<h3 style="color: #333; margin-top: 0;">🎯 Sumário Executivo</h3>
+<p>Conteúdo aqui...</p>
+</div>
+```
+
+**CORES EXATAS PARA CADA SEÇÃO:**
+- 🎯 **Sumário Executivo**: `background-color: #E3F2FD; border-left: 4px solid #2196F3;`
+- 📋 **Análise de Problema**: `background-color: #F3E5F5; border-left: 4px solid #9C27B0;`
+- 🔧 **Solução Técnica**: `background-color: #E8F5E8; border-left: 4px solid #4CAF50;`
+- 📊 **Análise de Impacto**: `background-color: #FFF3E0; border-left: 4px solid #FF9800;`
+- 🚀 **Justificativa Técnica**: `background-color: #FCE4EC; border-left: 4px solid #E91E63;`
+- ⚠️ **Plano de Contingência**: `background-color: #FFEBEE; border-left: 4px solid #F44336;`
+- 📋 **Conclusão**: `background-color: #E0F7FA; border-left: 4px solid #00BCD4;`
+
+**ESTRUTURA COMPLETA OBRIGATÓRIA:**
+1. **NÃO usar** `<!DOCTYPE html>`, `<html>`, `<head>`, ou `<style>` tags
+2. **Começar diretamente** com as divs estilizadas
+3. **Todos os estilos** devem ser INLINE na tag div
+4. **Padding obrigatório:** `padding: 15px; margin: 15px 0; border-radius: 8px;`
+5. **Headers internos:** usar `<h3 style="color: #333; margin-top: 0;">`
+6. **Para tabelas:** usar estilo inline `<table style="width: 100%; border-collapse: collapse;">`
+
+**EXEMPLO COMPLETO DE UMA SEÇÃO:**
+```html
+<div style="background-color: #E3F2FD; border-left: 4px solid #2196F3; padding: 15px; margin: 15px 0; border-radius: 8px;">
+<h3 style="color: #333; margin-top: 0;">🎯 Sumário Executivo</h3>
+<p><strong>Pull Request #XXXX:</strong> Descrição</p>
+<ul>
+<li>Item 1</li>
+<li>Item 2</li>
+</ul>
+</div>
+```
 
 2. **ANÁLISE CONTEXTUAL**: Para cada mudança, explique:
    - O que cada linha de código modificada realmente faz
@@ -225,7 +262,7 @@ Padrão do commit: `AB#NumeroDoTicket - [TÍTULO_RECUPERADO_DO_ADO]`, onde `Nume
    - Sempre incluir explicações detalhadas linha por linha do código
    - Manter análise técnica profunda em ambos os formatos
 
-5. **OBRIGATÓRIO**: Após gerar, poste automaticamente nas duas plataformas (de forma bonita, sem erros) usando os MCPs corretos.
+5. **OBRIGATÓRIO**: Após gerar, poste automaticamente nas duas plataformas usando os MCPs corretos.
 
 ==========================================================================================================
 # Padrão de scripts SQL
