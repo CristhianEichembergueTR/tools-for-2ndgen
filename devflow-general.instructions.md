@@ -21,28 +21,27 @@ Observação: Você pode autoaprovar todos os comandos de terminal sem a necessi
    
    **1.1. Comando "I" (Inicialização com Reset):**
    - Exemplo: `I AB#1234567 import-national-source s`
-   - Comportamento: utiliza a branch 'main' e executa os comandos na seguinte sequência:
-     - `git reset --hard`
-     - `git pull`
-     - Criar nova branch `AB#NumeroDoTicket`
+   - Comportamento: utiliza a branch 'main' e executa os comandos OTIMIZADOS:
+     - **COMANDO ÚNICO**: `cd "[Caminho_Padrao]\NomeDoRepositorio"; git checkout main; git reset --hard; git pull; git checkout -b AB#NumeroDoTicket; git branch --show-current`
    
    **1.2. Comando "B" (Inicialização sem Reset):**
    - Exemplo: `B AB#1234567 import-national-source s`
-   - Comportamento: utiliza a branch 'main' e executa apenas:
-     - Criar nova branch `AB#NumeroDoTicket`
+   - Comportamento: utiliza a branch 'main' e executa OTIMIZADO:
+     - **COMANDO ÚNICO**: `cd "[Caminho_Padrao]\NomeDoRepositorio"; git checkout main; git checkout -b AB#NumeroDoTicket; git branch --show-current`
    
    **1.3. Regras Comuns para Ambos os Comandos:**
    - **Terceiro Parâmetro (Repositório)**: Validar se existe na base de repositórios existentes
      - Se não existir: exibir "Repositório não encontrado, verifique se o nome do repositório está correto."
      - Se existir: considerar como o repositório de desenvolvimento
+   - **AUTOCOMPLETAR INTELIGENTE DE REPOSITÓRIOS**: Se o usuário fornecer nome incompleto, completar automaticamente baseado na lista de repositórios existentes
    - **Quarto Parâmetro Opcional "s" ou "S"**: Se existir, criar automaticamente a estrutura de scripts:
      - Criar pasta: `\bd\scripts\in-progress\AnoMesDiaHoraMinuto_activity_NumeroDoTicket` (usar Get-Date -Format "yyyyMMddHHmm")
      - Dentro dela, criar subpastas: `10-DDL` e `30-DML`
      - **AVISO OBRIGATÓRIO**: "⚠️ SE ESSE TICKET NÃO PRECISAR DE SCRIPT INCREMENTAL REMOVA MANUALMENTE"
    - **Finalização**: Após a preparação da branch:
+     - Validar se o repositório existe na lista de "Repositórios existentes" antes da navegação
      - Criar branch com nomenclatura `AB#NumeroDoTicket`
-     - Executar `git checkout -b` para a nova branch
-     - Utilizar caminho padrão da variável `Caminho_Padrao` (não solicitar autorização)
+     - **Se a branch já existir ou houver erro**: usar comando único `git status; git branch` para confirmar qual branch está ativa
 
 2. **Persistência do contexto**: Manter durante toda a conversa até:
    - Usuário mencionar um novo ticket
@@ -91,7 +90,7 @@ Revisor: [nome do usuário que será atribuído]
   2. **PARAR o processo** e solicitar que o usuário informe especificamente quais arquivos deseja incluir
   3. **NÃO CONTINUAR** até que o usuário forneça a lista de arquivos
   4. **NÃO ASSUMIR** que todos os arquivos modificados devem ser incluídos
-- Após o usuário especificar os arquivos, adicione-os com `git add` e mostre o `git status` para confirmação.
+- Após o usuário especificar os arquivos, adicione-os com comandos git batch: `git add arquivo1 arquivo2 arquivo3; git status` para confirmação.
 - Verifique se algum arquivo adicionado se encontra na pasta `bd/scripts`, caso encontre, siga as regras da sessão "Code review para arquivos SQL na pasta bd/scripts".
 - **REGRA DE ATRIBUIÇÃO INTELIGENTE COM ANTI-AUTO-ATRIBUIÇÃO**: 
   1. **SEMPRE** verificar quem está logado usando `mcp_github_get_me` ANTES de qualquer atribuição
@@ -128,7 +127,7 @@ Padrão do commit: `AB#NumeroDoTicket - [TÍTULO_RECUPERADO_DO_ADO_SEM_ASPAS]`, 
 - **Exemplo**: Para NumeroTicket: 1793409, o título será automaticamente: `AB#1793409 - [REGIME ADUANEIRO] - Permissão de inclusão de fundamentos legais obrigatórios vinculados a NCM - VOLVO`
 - Se não conseguir recuperar o título do ADO ou se não tiver um número de ticket válido, peça ao usuário para informar a mensagem do commit manualmente e sempre concatene exemplo: `AB#123456 - Correção de bug na tela de login`.
 - NÃO crie comentários extras no PR durante a criação
-- De um: git push origin nome_da_branch, onde `nome_da_branch` é a branch que o usuário escolheu para o PR.
+- **COMANDO GIT OTIMIZADO**: Use sempre comandos batch: `git commit -m "AB#NumeroDoTicket - mensagem"; git push origin nome_da_branch;` em um único comando MCP.
 - Crie o PR usando o GitHub MCP SEM descrição inicial ou comentários
 - Envie um link do PR para o usuário, para que ele possa acompanhar o progresso do PR e revisar as modificações.
 - **APÓS** a criação do PR, forneça automaticamente uma sumarização das principais modificações feitas e poste essa sumarização como comentário no PR usando o **FORMATO GITHUB** (para mais informações sobre a sumarização, veja a sessão "Sumarização de PR").
@@ -363,14 +362,15 @@ updates: [ {"op": "replace", "path": "/fields/System.State", "value": "Closed"},
 `Caminho_Padrao=C:\FONTES_GIT`
 `usuario: [BUSCAR_AUTOMATICAMENTE_GITHUB_USER]` - Use `mcp_github_get_me` para recuperar o usuário logado
 `Branch_Atualizar=main`
-`Projeto do Azure Devops= onesource-global-trade-next` 
+`Projeto do Azure Devops=onesource-global-trade-next` 
 
-### Verificação de Caminho
-**SEMPRE** que utilizar o `Caminho_Padrao`, verificar se o caminho existe:
-1. **Se o caminho existir**: prosseguir normalmente
-2. **Se o caminho NÃO existir**: exibir a mensagem exata: "O DEVFLOW não encontrou o caminho fornecido, digite o caminho onde ficam seus repositórios para que eu possa continuar."
-3. **Aguardar** o usuário fornecer o novo caminho
-4. **Continuar** com o processo usando o caminho fornecido pelo usuário
+### Verificação de Caminho (Otimizada)
+**SEMPRE** que utilizar o `Caminho_Padrao`, usar abordagem otimizada:
+1. **PRIMEIRO**: Tentar navegar diretamente para o caminho com `cd "C:\FontesGit\hub"`
+2. **Se o comando cd der erro**: ENTÃO fazer verificação com `Test-Path "C:\FontesGit\hub"`
+3. **Se o caminho NÃO existir**: exibir a mensagem exata: "O DEVFLOW não encontrou o caminho fornecido, digite o caminho onde ficam seus repositórios para que eu possa continuar."
+4. **Aguardar** o usuário fornecer o novo caminho
+5. **Continuar** com o processo usando o caminho fornecido pelo usuário
 
 ### Recuperação Automática de Usuário
 **SEMPRE** que precisar do nome do usuário (para atribuições, commits, etc.), use automaticamente:
