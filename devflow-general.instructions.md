@@ -57,12 +57,12 @@ Não pergunte tudo de uma vez faça de forma interativa.
 - **PR** (sem parâmetro) = 1 hora (padrão)
 - **PR [NumeroDeHoras]** = Ex: "PR 2" = 2 horas, "PR 0,5" = 0,5 horas (sempre usar vírgula, nunca ponto)
 - **PR [Repositorio] [NumeroDoTicket] [NumeroDeHoras]** = Ex: "PR duexp 2938102 2"
-- **PR [Repositorio] [NumeroDoTicket] [NumeroDeHoras] [Revisor]** = Ex: "PR duexp 2938102 2 Cristhian"
+- **PR [Repositorio] [NumeroDoTicket] [NumeroDeHoras] [Assignee]** = Ex: "PR duexp 2938102 2 Cristhian"
 
 **LÓGICA DE INTERPRETAÇÃO:**
 1. **Se apenas 1 parâmetro numérico (até 3 dígitos)**: considerar como horas
 2. **Se 3 parâmetros**: Repositorio + NumeroDoTicket + Horas
-3. **Se 4 parâmetros**: Repositorio + NumeroDoTicket + Horas + Revisor
+3. **Se 4 parâmetros**: Repositorio + NumeroDoTicket + Horas + Assignee
 4. **NumeroDoTicket**: sempre será o maior número (mais de 3 dígitos)
 5. **NumeroDeHoras**: sempre será menor (máximo 3 dígitos, pode ter vírgula)
 6. **PADRÃO**: Se não houver especificação de horas em qualquer formato, usar **1 hora** para fechar a task [Dev]
@@ -78,7 +78,7 @@ Repositório: [repositorio]
 Branch: AB#NumeroDoTicket
 Titulo: 'AB#NumeroDoTicket - Descrição do PR'
 Arquivos Modificados: 
-Revisor: [nome do usuário que será atribuído]
+Assignee: [nome do usuário que será atribuído]
 -----------------------------------
 
 1. Quando o usuário solicitar para que seja criado um novo PR ou que deseja commitar, verifique se existe algum caminho na variável `Caminho_Padrao`, caso não possua nenhum caminho solicite ao usuário o caminho que se encontra os módulos, solicitar quais serão os modulos que ele gostará de pegar as mudanças ir até as subpastas que começam com o nome que ele passou...
@@ -96,20 +96,20 @@ Revisor: [nome do usuário que será atribuído]
   1. **SEMPRE** verificar quem está logado usando `mcp_github_get_me` ANTES de qualquer atribuição
   2. **NUNCA** atribuir o próprio usuário logado como assignee do PR
   3. **VERIFICAÇÃO OBRIGATÓRIA DO CAMPO AREA NO ADO**: 
-     - **ANTES** de aplicar qualquer lógica de revisor, usar `mcp_ado_wit_get_work_item` para buscar o campo "System.AreaPath" ou "Area" do ticket
-     - **Se o campo Area contém a palavra "Operacionais"**: usar LuizVeraTR como revisor padrão (aplicar lógica antiga)
-     - **Se o campo Area NÃO contém "Operacionais"**: perguntar ao usuário o nome do Revisor para usar em todos os assignees
-  4. **Lógica de revisor baseada no usuário logado (APENAS se Area contém "Operacionais")**:
+     - **ANTES** de aplicar qualquer lógica de Assignee, usar `mcp_ado_wit_get_work_item` para buscar o campo "System.AreaPath" ou "Area" do ticket
+     - **Se o campo Area contém a palavra "Operacionais"**: usar LuizVeraTR como Assignee padrão (aplicar lógica antiga)
+     - **Se o campo Area NÃO contém "Operacionais"**: perguntar ao usuário o nome do Assignee para usar em todos os assignees
+  4. **Lógica de Assignee baseada no usuário logado (APENAS se Area contém "Operacionais")**:
      - Se usuário logado = LuizVeraTR → assignee = CristhianEichembergueTR
      - Se usuário logado = CristhianEichembergueTR → assignee = LuizVeraTR
      - Se usuário logado = qualquer outro → assignee = LuizVeraTR
-  5. **Se revisor foi especificado manualmente**: verificar se não é o próprio usuário logado
-     - Se revisor especificado = usuário logado → **IGNORAR** e aplicar a lógica inteligente acima
-     - Se revisor especificado ≠ usuário logado → usar o revisor especificado
+  5. **Se Assignee foi especificado manualmente**: verificar se não é o próprio usuário logado
+     - Se Assignee especificado = usuário logado → **IGNORAR** e aplicar a lógica inteligente acima
+     - Se Assignee especificado ≠ usuário logado → usar o Assignee especificado
   6. **EXEMPLO PRÁTICO**:
-     - Ticket com Area "Operacionais": Usuário logado: LuizVeraTR, Sem revisor especificado → Sistema usa CristhianEichembergueTR
-     - Ticket com Area "Desenvolvimento": Sistema pergunta: "Qual o nome do Revisor?" → Usuário responde: "João" → Sistema usa João
-     - Ticket com Area "Operacionais": Usuário logado: LuizVeraTR, Revisor especificado: "João" → Sistema usa João
+     - Ticket com Area "Operacionais": Usuário logado: LuizVeraTR, Sem Assignee especificado → Sistema usa CristhianEichembergueTR
+     - Ticket com Area "Desenvolvimento": Sistema pergunta: "Pra quem devo assinar (Assignee)?" → Usuário responde: "João" → Sistema usa João
+     - Ticket com Area "Operacionais": Usuário logado: LuizVeraTR, Assignee especificado: "João" → Sistema usa João
 - **REGRA OBRIGATÓRIA: SEMPRE CRIAR NOVA BRANCH**: Nunca fazer checkout para uma branch existente do ticket. Sempre criar uma nova branch seguindo a nomenclatura `AB#NumeroDoTicket-FIX[incremental]`, onde `NumeroDoTicket` é o número do ticket. 
 - **Verificação de Branch Existente**: Verificar se a branch `AB#NumeroDoTicket` já existe. Se existir, automaticamente usar o sufixo `-FIX1`. Se `AB#NumeroDoTicket-FIX1` também existir, usar `-FIX2`, e assim por diante.
 - **Processo obrigatório**:
@@ -134,7 +134,7 @@ Padrão do commit: `AB#NumeroDoTicket - [TÍTULO_RECUPERADO_DO_ADO_SEM_ASPAS]`, 
 - **APÓS** postar a sumarização no GitHub, poste também uma sumarização no ADO usando o Azure DevOps MCP no work item correspondente ao ticket usando o **FORMATO ADO**.
 - **OBRIGATÓRIO**: SEMPRE após criar o PR, buscar e fechar automaticamente a task [Dev] relacionada ao ticket (veja detalhes na sessão "REGRA OBRIGATÓRIA: Fechamento de Task [Dev] após PR")
 - Caso o usuário selecionou anteriormente mais de um repositório faça o mesmo processo para os outros repositórios.
-- Quando o usuário especificar "Revisor: [nome]", usar o Github MCP para atribuir oficialmente após a criação do PR nos assignees
+- Quando o usuário especificar "Assignee: [nome]", usar o Github MCP para atribuir oficialmente após a criação do PR nos assignees
 
 - **MÉTODO PARA ATRIBUIR ASSIGNEES** - Use sempre este comando após criar o PR: `mcp_github_update_issue` para atribuir o assignee
 - **🚨 PASSOS OBRIGATÓRIOS COM ANTI-AUTO-ATRIBUIÇÃO - NUNCA ESQUECER 🚨**:
@@ -143,14 +143,14 @@ Padrão do commit: `AB#NumeroDoTicket - [TÍTULO_RECUPERADO_DO_ADO_SEM_ASPAS]`, 
   3. ✅ **IMEDIATAMENTE** após criar, usar `mcp_github_update_issue` para atribuir assignees
   4. ✅ Substituir OWNER, REPO e ISSUE_NUMBER pelos valores corretos
   5. ✅ **APLICAR REGRA ANTI-AUTO-ATRIBUIÇÃO**: 
-     - Se não houver revisor especificado: usar lógica inteligente baseada no usuário logado
-     - Se revisor especificado = usuário logado: **IGNORAR** e usar lógica inteligente
-     - Se revisor especificado ≠ usuário logado: usar o revisor especificado
+     - Se não houver Assignee especificado: usar lógica inteligente baseada no usuário logado
+     - Se Assignee especificado = usuário logado: **IGNORAR** e usar lógica inteligente
+     - Se Assignee especificado ≠ usuário logado: usar o Assignee especificado
      - **LÓGICA INTELIGENTE** = a regra automática baseada em quem está logado (item 3 acima)
   6. ✅ **NUNCA** incluir o usuário logado no array de assignees
 
 - NÃO mencionar assignees em comentários, apenas atribuir no campo correto do GitHub.
-- SEMPRE atribuir nos assignees, não nos reviewers.
+- SEMPRE atribuir nos assignees, NUNCA nos reviewers.
 
 ### 🔴 LEMBRETE FINAL OBRIGATÓRIO:
 **NUNCA TERMINAR UM PR SEM:**
@@ -159,7 +159,7 @@ Padrão do commit: `AB#NumeroDoTicket - [TÍTULO_RECUPERADO_DO_ADO_SEM_ASPAS]`, 
 3. ✅ Verificar se o processo completo foi executado
 
 ## Sumarização de PR
-1. **APÓS** a criação de qualquer PR, sempre gere automaticamente comentários nas duas plataformas:
+1. **APÓS** a criação de qualquer PR, sempre gere automaticamente comentários nas duas plataformas de forma paralela:
 
 ### 📱 **FORMATO GITHUB** (Sumarização)
 **Título:** "📋 **Sumarização do PR**"
@@ -167,20 +167,23 @@ Padrão do commit: `AB#NumeroDoTicket - [TÍTULO_RECUPERADO_DO_ADO_SEM_ASPAS]`, 
 ```
 > [!IMPORTANT]
 > ## 🎯 **O que foi feito?**
-> [Resumo executivo da mudança]
+> [Resumo breve da mudança]
 
 > [!NOTE]
 > ## 🤔 **Por que precisou dessa mudança?**
 > [Contexto e problemas identificados]
 
 > [!TIP]
-> ## 🔧 **O que mudou na prática?**
-> ### **ANTES:** / ### **DEPOIS:**
-> [Código com explicação detalhada]
+> ## 🔧 **O que mudou de forma resumida?**
+> ```diff
+> - ANTES: [código/configuração anterior]
+> + DEPOIS: [código/configuração nova]
+> ```
+> [Explicação baseada nas diferenças dos arquivos do PR]
 
 > [!CAUTION]
-> ## 📊 **Impacto Detalhado**
-> [Segurança, Performance, Funcionalidade, Infraestrutura]
+> ## 📊 **Impacto Resumido**
+> [Segurança, Performance, Funcionalidade]
 
 > [!WARNING]
 > ## 🚀 **Justificativa Técnica**
@@ -192,36 +195,36 @@ Padrão do commit: `AB#NumeroDoTicket - [TÍTULO_RECUPERADO_DO_ADO_SEM_ASPAS]`, 
 
 > [!IMPORTANT]
 > ## **Resumo e Recomendação**
-> [Resumo final e aprovação]
+> [Resumo final para o aprovador do PR ter garantia e poder aprovar]
 ```
 
 ### 💻 **FORMATO ADO** (Documentação Técnica)
 **Título:** "📋 **Documentação Técnica**"
 **Estrutura HTML com cores INLINE (sem CSS externo) compatível com ADO:**
-- 🎯 **Sumário Executivo** (background azul)
-- 📋 **Análise de Problema** (background roxo)
+- 🎯 **Sumário** (background azul)
+- 📋 **Análise do Problema** (background roxo)
 - 🔧 **Solução Técnica Implementada** (background verde)
 - 📊 **Análise de Impacto** (background laranja + tabela)
-- 🚀 **Justificativa Técnica e Compliance** (background rosa)
-- ⚠️ **Plano de Contingência e Rollback** (background vermelho)
-- 📋 **Conclusão e Recomendação Técnica** (background azul céu)
+- 🚀 **Justificativa Técnica** (background rosa)
+- ⚠️ **Plano de Rollback** (background vermelho)
+- 📋 **Conclusão e Recomendação** (background azul céu)
 
 **IMPORTANTE: Use APENAS estilos INLINE nas divs, sem CSS externo ou classes. Exemplo:**
 ```html
 <div style="background-color: #E3F2FD; border-left: 4px solid #2196F3; padding: 15px; margin: 15px 0; border-radius: 8px;">
-<h3 style="color: #333; margin-top: 0;">🎯 Sumário Executivo</h3>
+<h3 style="color: #333; margin-top: 0;">🎯 Sumário</h3>
 <p>Conteúdo aqui...</p>
 </div>
 ```
 
 **CORES EXATAS PARA CADA SEÇÃO:**
-- 🎯 **Sumário Executivo**: `background-color: #E3F2FD; border-left: 4px solid #2196F3;`
-- 📋 **Análise de Problema**: `background-color: #F3E5F5; border-left: 4px solid #9C27B0;`
+- 🎯 **Sumário**: `background-color: #E3F2FD; border-left: 4px solid #2196F3;`
+- 📋 **Análise do Problema**: `background-color: #F3E5F5; border-left: 4px solid #9C27B0;`
 - 🔧 **Solução Técnica**: `background-color: #E8F5E8; border-left: 4px solid #4CAF50;`
 - 📊 **Análise de Impacto**: `background-color: #FFF3E0; border-left: 4px solid #FF9800;`
 - 🚀 **Justificativa Técnica**: `background-color: #FCE4EC; border-left: 4px solid #E91E63;`
-- ⚠️ **Plano de Contingência**: `background-color: #FFEBEE; border-left: 4px solid #F44336;`
-- 📋 **Conclusão**: `background-color: #E0F7FA; border-left: 4px solid #00BCD4;`
+- ⚠️ **Plano de Rollback**: `background-color: #FFEBEE; border-left: 4px solid #F44336;`
+- 📋 **Conclusão e Recomendação**: `background-color: #E0F7FA; border-left: 4px solid #00BCD4;`
 
 **ESTRUTURA COMPLETA OBRIGATÓRIA:**
 1. **NÃO usar** `<!DOCTYPE html>`, `<html>`, `<head>`, ou `<style>` tags
@@ -234,7 +237,7 @@ Padrão do commit: `AB#NumeroDoTicket - [TÍTULO_RECUPERADO_DO_ADO_SEM_ASPAS]`, 
 **EXEMPLO COMPLETO DE UMA SEÇÃO:**
 ```html
 <div style="background-color: #E3F2FD; border-left: 4px solid #2196F3; padding: 15px; margin: 15px 0; border-radius: 8px;">
-<h3 style="color: #333; margin-top: 0;">🎯 Sumário Executivo</h3>
+<h3 style="color: #333; margin-top: 0;">🎯 Sumário</h3>
 <p><strong>Pull Request #XXXX:</strong> Descrição</p>
 <ul>
 <li>Item 1</li>
@@ -259,9 +262,9 @@ Padrão do commit: `AB#NumeroDoTicket - [TÍTULO_RECUPERADO_DO_ADO_SEM_ASPAS]`, 
    - **GitHub:** Use GitHub MCP com formato Markdown + alerts
    - **ADO:** Use Azure DevOps MCP com formato HTML + backgrounds coloridos
    - Sempre incluir explicações detalhadas linha por linha do código
-   - Manter análise técnica profunda em ambos os formatos
+   - Manter análise técnica em ambos os formatos
 
-5. **OBRIGATÓRIO**: Após gerar, poste automaticamente nas duas plataformas usando os MCPs corretos.
+5. **OBRIGATÓRIO**: Após gerar, poste automaticamente (DE FORMA PARALELA E NÃO SEQUENCIAL) nas duas plataformas usando os MCPs corretos.
 
 ==========================================================================================================
 # Padrão de scripts SQL
@@ -363,14 +366,6 @@ updates: [ {"op": "replace", "path": "/fields/System.State", "value": "Closed"},
 `usuario: [BUSCAR_AUTOMATICAMENTE_GITHUB_USER]` - Use `mcp_github_get_me` para recuperar o usuário logado
 `Branch_Atualizar=main`
 `Projeto do Azure Devops=onesource-global-trade-next` 
-
-### Verificação de Caminho (Otimizada)
-**SEMPRE** que utilizar o `Caminho_Padrao`, usar abordagem otimizada:
-1. **PRIMEIRO**: Tentar navegar diretamente para o caminho com `cd "C:\FontesGit\hub"`
-2. **Se o comando cd der erro**: ENTÃO fazer verificação com `Test-Path "C:\FontesGit\hub"`
-3. **Se o caminho NÃO existir**: exibir a mensagem exata: "O DEVFLOW não encontrou o caminho fornecido, digite o caminho onde ficam seus repositórios para que eu possa continuar."
-4. **Aguardar** o usuário fornecer o novo caminho
-5. **Continuar** com o processo usando o caminho fornecido pelo usuário
 
 ### Recuperação Automática de Usuário
 **SEMPRE** que precisar do nome do usuário (para atribuições, commits, etc.), use automaticamente:
