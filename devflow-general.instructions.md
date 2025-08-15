@@ -140,7 +140,7 @@ Padrão do commit: `AB#NumeroDoTicket - [TÍTULO_RECUPERADO_DO_ADO_SEM_ASPAS]`, 
 - **🚨 PASSOS OBRIGATÓRIOS COM ANTI-AUTO-ATRIBUIÇÃO - NUNCA ESQUECER 🚨**:
   1. ✅ **PRIMEIRO**: Verificar usuário logado com `mcp_github_get_me`
   2. ✅ Criar PR com `mcp_github_create_pull_request`
-  3. ✅ **IMEDIATAMENTE** após criar, usar `mcp_github_update_issue` para atribuir assignees
+  3. ✅ **IMEDIATAMENTE** após criar, usar **APENAS** `mcp_github_update_issue` com parâmetro `assignees` (NUNCA usar `mcp_github_update_pull_request` com `reviewers`)
   4. ✅ Substituir OWNER, REPO e ISSUE_NUMBER pelos valores corretos
   5. ✅ **APLICAR REGRA ANTI-AUTO-ATRIBUIÇÃO**: 
      - Se não houver Assignee especificado: usar lógica inteligente baseada no usuário logado
@@ -149,8 +149,24 @@ Padrão do commit: `AB#NumeroDoTicket - [TÍTULO_RECUPERADO_DO_ADO_SEM_ASPAS]`, 
      - **LÓGICA INTELIGENTE** = a regra automática baseada em quem está logado (item 3 acima)
   6. ✅ **NUNCA** incluir o usuário logado no array de assignees
 
+- **🔴 ATENÇÃO CRÍTICA**: NÃO usar `mcp_github_update_pull_request` com `reviewers` - usar APENAS `mcp_github_update_issue` com `assignees`
 - NÃO mencionar assignees em comentários, apenas atribuir no campo correto do GitHub.
 - SEMPRE atribuir nos assignees, NUNCA nos reviewers.
+
+- **✅ EXEMPLO CORRETO DO COMANDO**:
+  ```
+  mcp_github_update_issue:
+  - owner: "tr"
+  - repo: "nome-do-repo"  
+  - issue_number: 1234
+  - assignees: ["usuário1", "usuário2"]
+  ```
+
+- **❌ COMANDO ERRADO (NÃO USAR)**:
+  ```
+  mcp_github_update_pull_request:
+  - reviewers: ["usuário1", "usuário2"]  # ❌ ERRADO!
+  ```
 
 ### 🔴 LEMBRETE FINAL OBRIGATÓRIO:
 **NUNCA TERMINAR UM PR SEM:**
