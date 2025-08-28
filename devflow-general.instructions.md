@@ -19,25 +19,31 @@ Observação: Você pode autoaprovar todos os comandos de terminal sem a necessi
 
 1. **Comandos de Inicialização de Desenvolvimento** - O primeiro parâmetro sempre será o contexto do ticket:
    
-   **1.1. Comando "I" (Inicialização com Reset):**
-   - Exemplo: `I AB#1234567 import-national-source s`
+   **1.1. Comando "i" (Inicialização com Reset):**
+   - Exemplo: `i AB#1234567 import-national-source s`
+   - **🚨 PARADA OBRIGATÓRIA DE SEGURANÇA**: ANTES de executar qualquer comando git, SEMPRE exibir o alerta:
+     - **MENSAGEM OBRIGATÓRIA**: "🚨 **QUER MESMO CONTINUAR? ESSE PROCEDIMENTO VAI DAR RESET HARD E VOCÊ PERDERÁ ALTERAÇÕES NO REPOSITÓRIO!** 🚨"
+     - **AGUARDAR RESPOSTA**: NUNCA prosseguir sem confirmação do usuário
+     - **CONTINUAR APENAS SE**: usuário digitar "s" ou "y"
+     - **ABORTAR SE**: usuário digitar "n"
+     - **QUALQUER OUTRA RESPOSTA**: repetir a pergunta até obter uma resposta válida
    - Comportamento: utiliza a branch 'main' e executa os comandos OTIMIZADOS:
      - **COMANDO ÚNICO**: `cd "[Caminho_Padrao]\NomeDoRepositorio"; git checkout main; git reset --hard; git pull; git checkout -b AB#NumeroDoTicket; git branch --show-current`
    
-   **1.2. Comando "B" (Inicialização sem Reset):**
-   - Exemplo: `B AB#1234567 import-national-source s`
+   **1.2. Comando "b" (Inicialização sem Reset):**
+   - Exemplo: `b AB#1234567 import-national-source s`
    - Comportamento: utiliza a branch 'main' e executa OTIMIZADO:
      - **COMANDO ÚNICO**: `cd "[Caminho_Padrao]\NomeDoRepositorio"; git checkout main; git checkout -b AB#NumeroDoTicket; git branch --show-current`
    
    **1.3. Regras Comuns para Ambos os Comandos:**
    - **Terceiro Parâmetro (Repositório)**: Validar se existe na base de repositórios existentes
-     - Se não existir: exibir "Repositório não encontrado, verifique se o nome do repositório está correto."
+     - Se não existir: exibir "Repositório inválido, verifique se o nome do repositório está correto."
      - Se existir: considerar como o repositório de desenvolvimento
    - **AUTOCOMPLETAR INTELIGENTE DE REPOSITÓRIOS**: Se o usuário fornecer nome incompleto, completar automaticamente baseado na lista de repositórios existentes
-   - **Quarto Parâmetro Opcional "s" ou "S"**: Se existir, criar automaticamente a estrutura de scripts:
+   - **Quarto Parâmetro Opcional "s"**: Se existir, criar automaticamente a estrutura de scripts:
      - Criar pasta: `\bd\scripts\in-progress\AnoMesDiaHoraMinuto_activity_NumeroDoTicket` (usar Get-Date -Format "yyyyMMddHHmm")
      - Dentro dela, criar subpastas: `10-DDL` e `30-DML`
-     - **AVISO OBRIGATÓRIO**: "⚠️ SE ESSE TICKET NÃO PRECISAR DE SCRIPT INCREMENTAL REMOVA MANUALMENTE"
+     - **AVISO OBRIGATÓRIO**: "⚠️ SE ESSE TICKET NÃO PRECISAR DE SCRIPTS INCREMENTAIS REMOVA MANUALMENTE."
    - **Finalização**: Após a preparação da branch:
      - Validar se o repositório existe na lista de "Repositórios existentes" antes da navegação
      - Criar branch com nomenclatura `AB#NumeroDoTicket`
@@ -47,30 +53,37 @@ Observação: Você pode autoaprovar todos os comandos de terminal sem a necessi
    - Usuário mencionar um novo ticket
    - Usuário pedir para limpar o contexto
    - Nova sessão de desenvolvimento iniciada
+   - Abrir novo chat
 
 3. **Uso automático**: Aplicar o ticket em contexto automaticamente em todos os comandos subsequentes que precisem do número do ticket.
 
 ## Criar Pull Request (PR)
-Não pergunte tudo de uma vez faça de forma interativa.
+Não pergunte tudo de uma vez, faça de forma interativa.
 
 **FORMATOS ACEITOS PARA O COMANDO PR:**
 - **PR** (sem parâmetro) = 1 hora (padrão)
 - **PR [NumeroDeHoras]** = Ex: "PR 2" = 2 horas, "PR 0,5" = 0,5 horas (sempre usar vírgula, nunca ponto)
 - **PR [Repositorio] [NumeroDoTicket] [NumeroDeHoras]** = Ex: "PR duexp 2938102 2"
-- **PR [Repositorio] [NumeroDoTicket] [NumeroDeHoras] [Assignee]** = Ex: "PR duexp 2938102 2 Cristhian"
+- **PR [Repositorio] [NumeroDoTicket] [NumeroDeHoras] [Assignee]** = Ex: "PR duexp 2938102 2 LuizVeraTR"
+- **PR [qualquer formato acima] ns** = Ex: "PR 2 ns", "PR duexp 2938102 2 ns", "PR duexp 2938102 2 LuizVeraTR ns" = Não fazer sumarizações
 
 **LÓGICA DE INTERPRETAÇÃO:**
 1. **Se apenas 1 parâmetro numérico (até 3 dígitos)**: considerar como horas
 2. **Se 3 parâmetros**: Repositorio + NumeroDoTicket + Horas
 3. **Se 4 parâmetros**: Repositorio + NumeroDoTicket + Horas + Assignee
 4. **NumeroDoTicket**: sempre será o maior número (mais de 3 dígitos)
-5. **NumeroDeHoras**: sempre será menor (máximo 3 dígitos, pode ter vírgula)
+5. **NumeroDeHoras**: sempre será menor que o NumeroDoTicket (e pode ter vírgula)
 6. **PADRÃO**: Se não houver especificação de horas em qualquer formato, usar **1 hora** para fechar a task [Dev]
+7. **PARÂMETRO "ns" (No Sumarization)**: Se "ns" for o último parâmetro em qualquer formato, **NÃO** fazer sumarizações no GitHub nem no ADO
 
 ### 🚨 CHECKLIST OBRIGATÓRIO - NUNCA ESQUECER:
 1. ✅ Criar PR com `mcp_github_create_pull_request`
 2. ✅ **IMEDIATAMENTE** usar `mcp_github_update_issue` para atribuir assignees
 3. ✅ Verificar se assignee foi atribuído corretamente
+4. ✅ **SE NÃO FOI ESPECIFICADO "ns"**: Postar sumarização no PR usando o formato GitHub
+5. ✅ **SE NÃO FOI ESPECIFICADO "ns"**: Postar sumarização no ADO usando o formato ADO
+6. ✅ Fechar automaticamente a task [DEV] com as horas especificadas
+7. ✅ Confirmar fechamento da task [DEV] para o usuário
 
 o prompt será assim:
 -----------------------------------
@@ -78,7 +91,7 @@ Repositório: [repositorio]
 Branch: AB#NumeroDoTicket
 Titulo: 'AB#NumeroDoTicket - Descrição do PR'
 Arquivos Modificados: 
-Assignee: [nome do usuário que será atribuído]
+Assignee: [valor da váriavel `assinar_para` ou nome especificado]
 -----------------------------------
 
 1. Quando o usuário solicitar para que seja criado um novo PR ou que deseja commitar, verifique se existe algum caminho na variável `Caminho_Padrao`, caso não possua nenhum caminho solicite ao usuário o caminho que se encontra os módulos, solicitar quais serão os modulos que ele gostará de pegar as mudanças ir até as subpastas que começam com o nome que ele passou...
@@ -93,24 +106,23 @@ Assignee: [nome do usuário que será atribuído]
 - Após o usuário especificar os arquivos, adicione-os com comandos git batch: `git add arquivo1 arquivo2 arquivo3; git status` para confirmação.
 - Verifique se algum arquivo adicionado se encontra na pasta `bd/scripts`, caso encontre, siga as regras da sessão "Code review para arquivos SQL na pasta bd/scripts".
 - **REGRA DE ATRIBUIÇÃO INTELIGENTE COM ANTI-AUTO-ATRIBUIÇÃO**: 
-  1. **SEMPRE** verificar quem está logado usando `mcp_github_get_me` ANTES de qualquer atribuição
-  2. **NUNCA** atribuir o próprio usuário logado como assignee do PR
-  3. **VERIFICAÇÃO OBRIGATÓRIA DO CAMPO AREA NO ADO**: 
-     - **ANTES** de aplicar qualquer lógica de Assignee, usar `mcp_ado_wit_get_work_item` para buscar o campo "System.AreaPath" ou "Area" do ticket
-     - **Se o campo Area contém a palavra "Operacionais"**: usar LuizVeraTR como Assignee padrão (aplicar lógica antiga)
-     - **Se o campo Area NÃO contém "Operacionais"**: perguntar ao usuário o nome do Assignee para usar em todos os assignees
-  4. **Lógica de Assignee baseada no usuário logado (APENAS se Area contém "Operacionais")**:
-     - Se usuário logado = LuizVeraTR → assignee = CristhianEichembergueTR
-     - Se usuário logado = CristhianEichembergueTR → assignee = LuizVeraTR
-     - Se usuário logado = qualquer outro → assignee = LuizVeraTR
-  5. **Se Assignee foi especificado manualmente**: verificar se não é o próprio usuário logado
-     - Se Assignee especificado = usuário logado → **IGNORAR** e aplicar a lógica inteligente acima
-     - Se Assignee especificado ≠ usuário logado → usar o Assignee especificado
+  1. **SEMPRE** recuperar os valores da variáveis `usuario` e `assinar_para` na sessão **## VARIAVEIS**
+  2. **NUNCA** atribuir o próprio valor da variável `usuario` como assignee do PR
+  3. ⚠️ **VERIFICAÇÃO DE CONFIGURAÇÃO CRÍTICA - PRIMEIRA PRIORIDADE**: 
+     - **CONDIÇÃO**: Se valor da variável `usuario` = valor da variável `assinar_para`
+     - **AÇÃO IMEDIATA**: Exibir alerta: "🚨 ERRO DE CONFIGURAÇÃO CRÍTICO: As variáveis 'usuario' e 'assinar_para' estão iguais! Configuração: usuario='X' e assinar_para='X'. Isso significa auto-atribuição, que é PROIBIDA!"
+     - **PERGUNTA OBRIGATÓRIA**: "Para quem devo atribuir (Assignee) este PR? Digite o nome do usuário GitHub:"
+     - **BLOQUEIO**: Aguardar resposta do usuário antes de prosseguir com QUALQUER operação de PR
+     - **VALIDAÇÃO**: A resposta não pode ser igual ao valor da variável `usuario`
+  4. **Lógica de Assignee baseada no usuário** (apenas quando configuração está correta):
+     - Se valor da variável `usuario` for diferente do valor da variável `assinar_para` → assignee = valor da variável `assinar_para`
+  5. **Se Assignee foi especificado manualmente**: verificar se não é o próprio usuário
+     - Se Assignee especificado = usuário → Apresentar erro: "🚨 ERRO: Você não pode se autoatribuir como Assignee. Verifique o valor da variável assinar_para."
+     - Se Assignee especificado ≠ usuário → usar o Assignee especificado
   6. **EXEMPLO PRÁTICO**:
-     - Ticket com Area "Operacionais": Usuário logado: LuizVeraTR, Sem Assignee especificado → Sistema usa CristhianEichembergueTR
-     - Ticket com Area "Desenvolvimento": Sistema pergunta: "Pra quem devo assinar (Assignee)?" → Usuário responde: "João" → Sistema usa João
-     - Ticket com Area "Operacionais": Usuário logado: LuizVeraTR, Assignee especificado: "João" → Sistema usa João
-- **REGRA OBRIGATÓRIA: SEMPRE CRIAR NOVA BRANCH**: Nunca fazer checkout para uma branch existente do ticket. Sempre criar uma nova branch seguindo a nomenclatura `AB#NumeroDoTicket-FIX[incremental]`, onde `NumeroDoTicket` é o número do ticket. 
+     - Usuário: valor da variável `usuario`, Sem Assignee especificado → Sistema usa valor da variável `assinar_para`
+     - Usuário: valor da variável `usuario`, Assignee especificado: "João" → Sistema usa João
+- **REGRA OBRIGATÓRIA: SEMPRE CRIAR NOVA BRANCH**: Nunca fazer checkout para uma branch existente do ticket. Sempre criar uma nova branch seguindo a nomenclatura `AB#NumeroDoTicket-FIX[incremental]`, onde `NumeroDoTicket` é o número do ticket sem o AB# (assim evita de ficar AB# duplicado). 
 - **Verificação de Branch Existente**: Verificar se a branch `AB#NumeroDoTicket` já existe. Se existir, automaticamente usar o sufixo `-FIX1`. Se `AB#NumeroDoTicket-FIX1` também existir, usar `-FIX2`, e assim por diante.
 - **Processo obrigatório**:
   1. Verificar se `AB#NumeroDoTicket` existe
@@ -125,29 +137,33 @@ Assignee: [nome do usuário que será atribuído]
 - Solicite sempre o commit message que será utilizado no PR, e se o usuário deseja atribuir o PR para alguém, caso sim, solicite o nome do usuário que será atribuído.
 Padrão do commit: `AB#NumeroDoTicket - [TÍTULO_RECUPERADO_DO_ADO_SEM_ASPAS]`, onde `NumeroDoTicket` é o número do ticket e `[TÍTULO_RECUPERADO_DO_ADO_SEM_ASPAS]` é o título completo do work item recuperado automaticamente do Azure DevOps com aspas removidas.
 - **Exemplo**: Para NumeroTicket: 1793409, o título será automaticamente: `AB#1793409 - [REGIME ADUANEIRO] - Permissão de inclusão de fundamentos legais obrigatórios vinculados a NCM - VOLVO`
-- Se não conseguir recuperar o título do ADO ou se não tiver um número de ticket válido, peça ao usuário para informar a mensagem do commit manualmente e sempre concatene exemplo: `AB#123456 - Correção de bug na tela de login`.
+- Se não conseguir recuperar o título do ADO ou se não tiver um número de ticket válido, peça ao usuário para informar a mensagem do commit manualmente e sempre concatene exemplo: `AB#123456 - Ajustes`.
 - NÃO crie comentários extras no PR durante a criação
 - **COMANDO GIT OTIMIZADO**: Use sempre comandos batch: `git commit -m "AB#NumeroDoTicket - mensagem"; git push origin nome_da_branch;` em um único comando MCP.
 - Crie o PR usando o GitHub MCP SEM descrição inicial ou comentários
 - Envie um link do PR para o usuário, para que ele possa acompanhar o progresso do PR e revisar as modificações.
-- **APÓS** a criação do PR, forneça automaticamente uma sumarização das principais modificações feitas e poste essa sumarização como comentário no PR usando o **FORMATO GITHUB** (para mais informações sobre a sumarização, veja a sessão "Sumarização de PR").
-- **APÓS** postar a sumarização no GitHub, poste também uma sumarização no ADO usando o Azure DevOps MCP no work item correspondente ao ticket usando o **FORMATO ADO**.
-- **OBRIGATÓRIO**: SEMPRE após criar o PR, buscar e fechar automaticamente a task [Dev] relacionada ao ticket (veja detalhes na sessão "REGRA OBRIGATÓRIA: Fechamento de Task [Dev] após PR")
+- **APÓS** a criação do PR, **SE NÃO FOI ESPECIFICADO O PARÂMETRO "ns"**, forneça automaticamente uma sumarização das principais modificações feitas e poste essa sumarização como comentário no PR usando o **FORMATO GITHUB** (para mais informações sobre a sumarização, veja a sessão "Sumarização de PR").
+- **APÓS** postar a sumarização no GitHub, **SE NÃO FOI ESPECIFICADO O PARÂMETRO "ns"**, poste também uma sumarização no ADO usando o Azure DevOps MCP no work item correspondente ao ticket usando o **FORMATO ADO**.
+- **OBRIGATÓRIO**: SEMPRE após criar o PR, buscar e fechar automaticamente a task child [Dev] relacionada ao ticket (veja detalhes na sessão "REGRA OBRIGATÓRIA: Fechamento de Task [Dev] após PR")
 - Caso o usuário selecionou anteriormente mais de um repositório faça o mesmo processo para os outros repositórios.
 - Quando o usuário especificar "Assignee: [nome]", usar o Github MCP para atribuir oficialmente após a criação do PR nos assignees
 
 - **MÉTODO PARA ATRIBUIR ASSIGNEES** - Use sempre este comando após criar o PR: `mcp_github_update_issue` para atribuir o assignee
 - **🚨 PASSOS OBRIGATÓRIOS COM ANTI-AUTO-ATRIBUIÇÃO - NUNCA ESQUECER 🚨**:
-  1. ✅ **PRIMEIRO**: Verificar usuário logado com `mcp_github_get_me`
-  2. ✅ Criar PR com `mcp_github_create_pull_request`
-  3. ✅ **IMEDIATAMENTE** após criar, usar **APENAS** `mcp_github_update_issue` com parâmetro `assignees` (NUNCA usar `mcp_github_update_pull_request` com `reviewers`)
-  4. ✅ Substituir OWNER, REPO e ISSUE_NUMBER pelos valores corretos
-  5. ✅ **APLICAR REGRA ANTI-AUTO-ATRIBUIÇÃO**: 
-     - Se não houver Assignee especificado: usar lógica inteligente baseada no usuário logado
-     - Se Assignee especificado = usuário logado: **IGNORAR** e usar lógica inteligente
-     - Se Assignee especificado ≠ usuário logado: usar o Assignee especificado
-     - **LÓGICA INTELIGENTE** = a regra automática baseada em quem está logado (item 3 acima)
-  6. ✅ **NUNCA** incluir o usuário logado no array de assignees
+  1. ✅ **PRIMEIRO E OBRIGATÓRIO**: Recuperar os valores das váriaveis `usuario` e `assinar_para` na sessão **## VARIAVEIS**
+  2. ✅ **VERIFICAÇÃO CRÍTICA OBRIGATÓRIA**: 
+     - **SE** `usuario` = `assinar_para` → **PARAR IMEDIATAMENTE** e exibir: "🚨 ERRO DE CONFIGURAÇÃO CRÍTICO: As variáveis 'usuario' e 'assinar_para' estão iguais! Isso significa auto-atribuição, que é PROIBIDA!"
+     - **PERGUNTA OBRIGATÓRIA**: "Para quem devo atribuir (Assignee) este PR? Digite o nome do usuário GitHub:"
+     - **AGUARDAR** resposta do usuário e usar essa resposta como assignee
+     - **NÃO PROSSEGUIR** até obter uma resposta válida diferente do valor da variável `usuario`
+  3. ✅ Criar PR com `mcp_github_create_pull_request`
+  4. ✅ **IMEDIATAMENTE** após criar, usar **APENAS** `mcp_github_update_issue` com parâmetro `assignees` (NUNCA usar `mcp_github_update_pull_request` com `reviewers`)
+  5. ✅ Substituir OWNER, REPO e ISSUE_NUMBER pelos valores corretos
+  6. ✅ **APLICAR ASSIGNEE DEFINIDO**: 
+     - Se configuração estava correta (usuario ≠ assinar_para): usar valor da variável `assinar_para`
+     - Se configuração estava incorreta (usuario = assinar_para): usar a resposta fornecida pelo usuário na etapa 2
+  7. ✅ **NUNCA** incluir o valor da váriavel `usuario` no array de assignees
+  8. ✅ **VALIDAÇÃO FINAL**: Confirmar que o assignee atribuído é diferente do valor da variável `usuario`
 
 - **🔴 ATENÇÃO CRÍTICA**: NÃO usar `mcp_github_update_pull_request` com `reviewers` - usar APENAS `mcp_github_update_issue` com `assignees`
 - NÃO mencionar assignees em comentários, apenas atribuir no campo correto do GitHub.
@@ -159,10 +175,10 @@ Padrão do commit: `AB#NumeroDoTicket - [TÍTULO_RECUPERADO_DO_ADO_SEM_ASPAS]`, 
   - owner: "tr"
   - repo: "nome-do-repo"  
   - issue_number: 1234
-  - assignees: ["usuário1", "usuário2"]
+  - assignees: ["usuário1", "usuário2"]  # ✅ CERTO!
   ```
 
-- **❌ COMANDO ERRADO (NÃO USAR)**:
+- **❌ COMANDO ERRADO (NUNCA USAR)**:
   ```
   mcp_github_update_pull_request:
   - reviewers: ["usuário1", "usuário2"]  # ❌ ERRADO!
@@ -173,9 +189,10 @@ Padrão do commit: `AB#NumeroDoTicket - [TÍTULO_RECUPERADO_DO_ADO_SEM_ASPAS]`, 
 1. ✅ Usar `mcp_github_update_issue` para assignees
 2. ✅ Confirmar que o assignee foi atribuído
 3. ✅ Verificar se o processo completo foi executado
+4. ✅ Validar se tudo que está na sessão **### 🚨 CHECKLIST OBRIGATÓRIO - NUNCA ESQUECER:** foi feito também!
 
 ## Sumarização de PR
-1. **APÓS** a criação de qualquer PR, sempre gere automaticamente comentários nas duas plataformas de forma paralela:
+1. **APÓS** a criação de qualquer PR, **SE NÃO FOI ESPECIFICADO O PARÂMETRO "ns"**, sempre gere automaticamente comentários nas duas plataformas de forma paralela:
 
 ### 📱 **FORMATO GITHUB** (Sumarização)
 **Título:** "📋 **Sumarização do PR**"
@@ -280,7 +297,7 @@ Padrão do commit: `AB#NumeroDoTicket - [TÍTULO_RECUPERADO_DO_ADO_SEM_ASPAS]`, 
    - Sempre incluir explicações detalhadas linha por linha do código
    - Manter análise técnica em ambos os formatos
 
-5. **OBRIGATÓRIO**: Após gerar, poste automaticamente (DE FORMA PARALELA E NÃO SEQUENCIAL) nas duas plataformas usando os MCPs corretos.
+5. **OBRIGATÓRIO**: **APENAS SE NÃO FOI ESPECIFICADO "ns"**: Após gerar, poste automaticamente (DE FORMA PARALELA E NÃO SEQUENCIAL) nas duas plataformas usando os MCPs corretos.
 
 ==========================================================================================================
 # Padrão de scripts SQL
@@ -292,26 +309,7 @@ Padrão do commit: `AB#NumeroDoTicket - [TÍTULO_RECUPERADO_DO_ADO_SEM_ASPAS]`, 
 4. **OBRIGATÓRIO**: SEMPRE que for criar qualquer script SQL, deve ser criado com codificação ANSI
 5. **CRIAÇÃO AUTOMÁTICA DE EXEMPLO**: SEMPRE que o usuário pedir para criar um script SQL sem fornecer informações completas inicialmente, criar automaticamente um exemplo funcional com dados genéricos/padrão e depois oferecer a opção de modificar com as informações específicas que ele desejar (nomes de tabelas, colunas, tipos de dados, etc.). **IMPORTANTE: Use sempre os exemplos EXATOS do arquivo regras-oracle.instructions.md, mas substitua nomes específicos por placeholders genéricos como "NomeDaTabela", "NomeDaColuna", "TipoDeColuna", etc., mantendo toda a estrutura original do código.**
 
-6. **VERIFICAÇÃO AUTOMÁTICA**: SEMPRE após criar um script SQL, verificar automaticamente se está em codificação ANSI usando PowerShell e recriar em ANSI se necessário:
-   ```powershell
-   function Get-FileEncoding {
-       param([string]$Path)
-       $bytes = [System.IO.File]::ReadAllBytes($Path)
-       if ($bytes.Length -gt 3 -and $bytes[0] -eq 0xEF -and $bytes[1] -eq 0xBB -and $bytes[2] -eq 0xBF) {
-           return "UTF8-BOM"
-       }
-       elseif ($bytes.Length -gt 1 -and $bytes[0] -eq 0xFF -and $bytes[1] -eq 0xFE) {
-           return "UTF16-LE"
-       }
-       elseif ($bytes.Length -gt 1 -and $bytes[0] -eq 0xFE -and $bytes[1] -eq 0xFF) {
-           return "UTF16-BE"
-       }
-       else {
-           return "ANSI"
-       }
-   }
-   Get-FileEncoding "caminho_do_arquivo.sql"
-   ```
+6. **VERIFICAÇÃO AUTOMÁTICA**: SEMPRE após criar um script SQL, verificar automaticamente se está em codificação ANSI. NÃO PODE SER UTF-8, UTF-16, ou qualquer outra codificação.
 7. **REVISÃO AUTOMÁTICA DE SINTAXE**: SEMPRE após criar um script SQL, realizar verificação automática de:
    - Terminação correta com "/" (barra normal) em vez de "\" (barra invertida)
    - Codificação ANSI
@@ -320,45 +318,36 @@ Padrão do commit: `AB#NumeroDoTicket - [TÍTULO_RECUPERADO_DO_ADO_SEM_ASPAS]`, 
 8. sempre verificar se a pasta gerada no `bd\scripts\in-progress` contem a seguinte nomenclatura:
    - AnoMesDiaHoraMinuto_activity_NumeroDoTicket
    Exemplo: `202310051530_activity_123456` (Sempre verifique se bate com a data atual. o minuto não precisa ser exato)
-9. Para os arquivos que estão na pasta `bd/scripts/in-progress`, deve-se verificar se o nome do arquivo como com as seguintes regras:
-    - 10_ddl -> CREATE/ALTER/DROP
-    - 30_dml -> INSERT/UPDATE/DELETE
-    - 10_dcl -> GRANTS
-E deve-se estar dentro da pasta 10-DDL, 30-DML ou 10-DCL dentro da pasta `in-progress\AnoMesDiaHoraMinuto_activity_NumeroDoTicket`
-10. Caso o usuário peça para criar um script lembre-se de pedir sempre o NumeroDoTicket
-11. Verifique o arquivo regras-oracle.instructions.md nas instruções para ver se as regras estão sendo seguidas.
 
 =========================================================================================================
 
 # ADO
-## REGRA OBRIGATÓRIA: Fechamento de Task [Dev] após PR
+## REGRA OBRIGATÓRIA: Fechamento de Task [DEV] após PR
 **SEMPRE** que você terminar de fazer um pull request, você deve AUTOMATICAMENTE:
-1. **Procurar a task filha [Dev] ou [DEV]** no work item relacionado ao ticket usando `mcp_ado_wit_get_work_item` com expand=relations
-2. **Fechar automaticamente a task [Dev]** usando as horas especificadas no comando PR:
+1. **Procurar a task filha [DEV] ou [Dev]** no work item relacionado ao ticket usando `mcp_ado_wit_get_work_item` com expand=relations
+2. **Fechar automaticamente a task [DEV]** usando as horas especificadas no comando PR:
    - Se usuário usou **PR** (sem parâmetro): fechar com **1 hora**
    - Se usuário usou **PR 2**: fechar com **2 horas**
    - Se usuário usou **PR 0,5**: fechar com **0,5 horas** (sempre converter vírgula para ponto internamente)
-3. **Atribuir a task [Dev] para o email do usuário logado no Github** (por exemplo: Myllena.Almeida@thomsonreuters.com)
+3. **Atribuir a task [DEV] para o email do usuário logado no Github** (por exemplo: Myllena.Almeida@thomsonreuters.com)
 4. **Definir Original Estimate** com o mesmo valor das horas trabalhadas
 5. **Confirmar ao usuário** que a task foi fechada com X horas (valor usado)
-6. **APENAS se não foi especificado parâmetro no comando PR**, perguntar: "Task [Dev] fechada com 1 hora. Deseja alterar a quantidade de horas? (Se sim, informe o novo valor e eu atualizo)"
+6. **APENAS se não foi especificado parâmetro no comando PR**, perguntar: "Task [DEV] fechada com 1 hora. Deseja alterar a quantidade de horas? (Se sim, informe o novo valor e eu atualizo)"
 7. **Se o usuário informar um novo valor** (apenas quando não especificado inicialmente), atualizar a task com o novo valor
 
 ### Processo Automático do Fechamento:
-1. Após criar PR e sumarização → Buscar work item filhos
-2. Identificar task com título contendo "[Dev]" ou "[DEV]"
+1. Após criar PR e sumarizações → Buscar work item filhos
+2. Identificar task com título contendo "[DEV]" ou "[Dev]"
 3. Fechar automaticamente com horas especificadas no comando PR → Confirmar fechamento → Oferecer alteração apenas se não especificado
 
-## REGRA OBRIGATÓRIA: Fechamento de Task quando solicitado
-**SEMPRE** que alguém pedir para fechar ou dar "closed" em uma task, você deve:
-1. **Verificar se é uma User Story** (se for, procurar a task filha [Dev])
-2. **Se for uma task específica**, fechar diretamente
-3. **Se for User Story**, procurar a task filha [Dev] ou [DEV]
-4. **Fechar automaticamente a task [Dev] com 1 hora** como padrão
-5. **Recuperar o nome de usuário de quem fez a solicitação** e atribuir à task
-6. **Confirmar ao usuário** que a task foi fechada com 1 hora
-7. **APÓS fechar**, perguntar: "Task [Dev] fechada com 1 hora. Deseja alterar a quantidade de horas? (Se sim, informe o novo valor e eu atualizo)"
-7. **Fechar a task [Dev]** com:
+## REGRA OBRIGATÓRIA: Fechamento de SubTask quando solicitado
+**SEMPRE** que alguém pedir para fechar ou dar "closed" em uma subtask, você deve:
+1. **Verificar se o id (ticket) é de uma User Story ou Bug** (se for, procurar a task filha [DEV] e fechar diretamente com a hora informada ou default 1 hora)
+2. **Se o id (ticket) já for de uma task filha [DEV]**, fechar diretamente com a hora informada ou default 1 hora
+3. **Recuperar o nome de usuário de quem fez a solicitação** e atribuir à subtask
+4. **Confirmar ao usuário** que a subtask foi fechada com a hora informada ou default 1 hora
+5. **APÓS fechar**, perguntar: "SubTask [DEV] fechada com as horas informadas. Deseja alterar a quantidade de horas? (Se sim, informe o novo valor e eu atualizo)."
+6. **Fechar a task filha [DEV]** com:
    - Status: Closed
    - Assigned To: usuário que fez a solicitação
    - Completed Work: horas informadas
@@ -369,25 +358,29 @@ E deve-se estar dentro da pasta 10-DDL, 30-DML ou 10-DCL dentro da pasta `in-pro
 2. **Atualizar task** incluindo o campo `System.AssignedTo` com o EMAIL do usuário (não usar ID)
 3. **SEMPRE usar o email** para atribuição, pois funciona melhor que IDs
 
-### Exemplo de comando para fechar task [Dev] com atribuição:
+### Exemplo de comando para fechar task [DEV] com atribuição:
 ```
 mcp_ado_wit_update_work_item:
-id: [ID_DA_TASK_DEV]
+id: [ID_DA_SUBTASK_DEV]
 updates: [ {"op": "replace", "path": "/fields/System.State", "value": "Closed"}, {"op": "replace", "path": "/fields/System.AssignedTo", "value": "usuario@thomsonreuters.com"}, {"op": "replace", "path": "/fields/Microsoft.VSTS.Scheduling.CompletedWork", "value": "X"}, {"op": "replace", "path": "/fields/Microsoft.VSTS.Scheduling.OriginalEstimate", "value": "X"} ]
 ```
 =========================================================================================================
 
 ## VARIAVEIS
 `Caminho_Padrao=C:\FONTES_GIT`
-`usuario: [BUSCAR_AUTOMATICAMENTE_GITHUB_USER]` - Use `mcp_github_get_me` para recuperar o usuário logado
+`usuario=CristhianEichembergueTR`
 `Branch_Atualizar=main`
 `Projeto do Azure Devops=onesource-global-trade-next` 
+`email=cristhian.eichembergue`
+`assinar_para=CristhianEichembergueTR` 
 
 ### Recuperação Automática de Usuário
-**SEMPRE** que precisar do nome do usuário (para atribuições, commits, etc.), use automaticamente:
-1. Chame `mcp_github_get_me` para obter dados do usuário logado
-2. Use o campo `login` como nome de usuário GitHub
-3. Para ADO, use o padrão: `{login}@thomsonreuters.com` ou busque o email real se disponível
+**SEMPRE** que precisar do nome do usuário (para atribuições, commits, etc.), siga esta ordem:
+1. **PRIMEIRO**: SEMPRE usar o valor da variável `usuario` 
+2. **SEGUNDO**: Para email, usar o valor da variável `email`
+3. **TERCEIRO**: Para ADO, usar o padrão: `{email}@thomsonreuters.com`
+4. **APENAS SE FALHAR**: Somente se alguma operação falhar por erro de usuário inválido, então usar `mcp_github_get_me` para recuperar o usuário logado
+5. **NUNCA**: Chamar `mcp_github_get_me` preventivamente - usar apenas como fallback em caso de erro
 
 =========================================================================================================
 
